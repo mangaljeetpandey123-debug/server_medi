@@ -8,7 +8,8 @@ const {
   getData, 
   getDashboardStats,
   editUser,
-  deleteUser
+  deleteUser,
+  getAllDataForExport
 } = require('../controllers/adminController');
 
 // All routes require authentication and admin role
@@ -23,6 +24,7 @@ router.delete('/users/:userId', deleteUser);
 
 // Data and analytics routes
 router.get('/data', getData);
+router.get('/data/export', getAllDataForExport);  // Add this route
 router.get('/dashboard-stats', getDashboardStats);
 
 module.exports = router;

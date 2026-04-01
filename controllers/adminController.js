@@ -208,6 +208,46 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
+const getAllDataForExport = async (req, res) => {
+  try {
+    const { date, doctor, location, createdBy } = req.query;
+    let filter = {};
+
+    // Date filter
+    if (date) {
+      const startDate = new Date(date);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(date);
+      endDate.setHours(23, 59, 59, 999);
+      filter.startDate = { $gte: startDate, $lte: endDate };
+    }
+
+    // Doctor name search
+    if (doctor) {
+      filter.docName = { $regex: doctor, $options: 'i' };
+    }
+
+    // Location search
+    if (location) {
+      filter.location = { $regex: location, $options: 'i' };
+    }
+
+    // Agent filter
+    if (createdBy) {
+      filter.createdBy = createdBy;
+    }
+
+    const prescriptions = await Prescription.find(filter)
+      .sort({ createdAt: -1 });
+    
+    res.json(prescriptions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 module.exports = { 
   createUser, 
   getUsers, 
@@ -215,5 +255,6 @@ module.exports = {
   getData, 
   getDashboardStats,
   editUser,
-  deleteUser
+  deleteUser,
+  getAllDataForExport
 };
